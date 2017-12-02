@@ -1,14 +1,14 @@
 <template>
   <div class="group">
     <div class="panel panel-default conditions">
-      <div class="panel-heading">
-        <h3 class="panel-title">Filter</h3>
+      <div class="panel-heading" @click="closed = !closed">
+        <h3 class="panel-title">Filter: {{ group.name }}</h3>
       </div>
 
-      <div class="panel-body">
+      <div class="panel-body" v-if="!closed">
         <div class="form-group">
           <label for="group-name">Naam</label>
-          <input v-model="group.name" class="form-control" id="group-name" />
+          <input v-model="group.name" class="form-control" id="group-name" placeholder="untitled" />
         </div>
 
         <div class="panel panel-default conditions">
@@ -66,7 +66,7 @@
                   </select>
                 </td>
                 <td class="arg">
-                  <input v-model="action.action_value" class="form-control" v-if="action_info(action.action).arg_count > 0" />
+                  <input v-model="action.action_value" class="form-control" v-if="need_arg(action.action)" />
                 </td>
                 <td class="remove">
                   <button class="btn btn-danger" @click="remove_action(action)" type="button">&cross;</button>
@@ -105,12 +105,17 @@
       remove_action (action) {
         this.group.actions = this.group.actions.filter((v) => v !== action)
       },
-      action_info (action) {
-        return this.supported_actions[action]
+      need_arg (action) {
+        if (action in this.supported_actions) {
+          return this.supported_actions[action].arg_count > 0
+        }
+        return false
       }
     },
     data () {
       return {
+        closed: true,
+
         fields: {
           to: {
             name: 'To'

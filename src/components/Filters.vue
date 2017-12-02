@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <filter-group :group="group" v-for="group in filters" @save="save" :key="group.id"></filter-group>
+    <button @click="add_filter" class="btn btn-primary">Add filter</button>
   </div>
 </template>
 
@@ -27,6 +28,9 @@
         }).catch(() => {
           console.log('err')
         })
+      },
+      add_filter () {
+        this.filters.push({ name: '', combine: 'and', rules: [{}], actions: [] })
       }
     }
   }
