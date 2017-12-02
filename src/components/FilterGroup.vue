@@ -10,83 +10,79 @@
           <label for="group-name">Naam</label>
           <input v-model="group.name" class="form-control" id="group-name" />
         </div>
-      </div>
 
-    </div>
+        <div class="panel panel-default conditions">
+          <div class="panel-heading">
+            <h3 class="panel-title">Voorwaarden</h3>
+          </div>
 
-    <div class="panel panel-default conditions">
-      <div class="panel-heading">
-        <h3 class="panel-title">Voorwaarden</h3>
-      </div>
-
-      <div class="panel-body">
-        <div class="combine">
-          <select v-model="group.combine" class="form-control">
-            <option value="and">Alle regels moeten overeenkomen (AND)</option>
-            <option value="or">Tenminste &eacute;&eacute;n regel moet overeenkomen (OR)</option>
-          </select>
+          <div class="panel-body">
+            <div class="combine">
+              <select v-model="group.combine" class="form-control">
+                <option value="and">Alle regels moeten overeenkomen (AND)</option>
+                <option value="or">Tenminste &eacute;&eacute;n regel moet overeenkomen (OR)</option>
+              </select>
+            </div>
+      
+            <table class="rule-table">
+              <tr class="rules" v-for="rule in group.rules">
+                <td class="field">
+                  <select v-model="rule.field" class="form-control">
+                    <option :value="k" v-for="(v, k) in fields">{{ v.name }}</option>
+                  </select>
+                </td>
+                <td class="function">
+                  <select v-model="rule.func" class="form-control">
+                    <option :value="k" v-for="(v, k) in functions">{{ v.name }}</option>
+                  </select>
+                </td>
+                <td class="arg">
+                  <input v-model="rule.arg" class="form-control" />
+                </td>
+                <td class="remove">
+                  <button class="btn btn-danger" @click="remove_rule(rule)" type="button">&cross;</button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3"></td>
+                <td>
+                  <button class="btn btn-primary" @click="add_rule" type="button">+</button>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
-  
-        <table class="rule-table">
-          <tr class="rules" v-for="rule in group.rules">
-            <td class="field">
-              <select v-model="rule.field" class="form-control">
-                <option :value="k" v-for="(v, k) in fields">{{ v.name }}</option>
-              </select>
-            </td>
-            <td class="function">
-              <select v-model="rule.f" class="form-control">
-                <option :value="k" v-for="(v, k) in functions">{{ v.name }}</option>
-              </select>
-            </td>
-            <td class="arg">
-              <input v-model="rule.arg" class="form-control" />
-            </td>
-            <td class="remove">
-              <button class="btn btn-danger" @click="remove_rule(rule)" type="button">&cross;</button>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="3"></td>
-            <td>
-              <button class="btn btn-primary" @click="add_rule" type="button">+</button>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Acties</h3>
-      </div>
-      <div class="panel-body">
-        <table class="rule-table">
-          <tr class="rules" v-for="action in group.actions">
-            <td class="field">
-              <select v-model="action.f" class="form-control">
-                <option :value="k" v-for="(v, k) in supported_actions">{{ v.name }}</option>
-              </select>
-            </td>
-            <td class="arg">
-              <input v-model="action.arg" class="form-control" v-if="action_info(action).arg_count > 0" />
-            </td>
-            <td class="remove">
-              <button class="btn btn-danger" @click="remove_action(action)" type="button">&cross;</button>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2"></td>
-            <td>
-              <button class="btn btn-primary" @click="add_action" type="button">+</button>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <button class="btn btn-primary" type="button">Opslaan</button>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Acties</h3>
+          </div>
+          <div class="panel-body">
+            <table class="rule-table">
+              <tr class="rules" v-for="action in group.actions">
+                <td class="field">
+                  <select v-model="action.action" class="form-control">
+                    <option :value="k" v-for="(v, k) in supported_actions">{{ v.name }}</option>
+                  </select>
+                </td>
+                <td class="arg">
+                  <input v-model="action.action_value" class="form-control" v-if="action_info(action.action).arg_count > 0" />
+                </td>
+                <td class="remove">
+                  <button class="btn btn-danger" @click="remove_action(action)" type="button">&cross;</button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2"></td>
+                <td>
+                  <button class="btn btn-primary" @click="add_action" type="button">+</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="button" @click="$emit('save')">Opslaan</button>
       </div>
     </div>
   </div>
@@ -95,6 +91,7 @@
 <script>
   export default {
     props: ['group'],
+
     methods: {
       add_rule () {
         this.group.rules.push({})
@@ -103,13 +100,13 @@
         this.group.rules = this.group.rules.filter((v) => v !== rule)
       },
       add_action () {
-        this.group.actions.push({f: 'move_to_folder'})
+        this.group.actions.push({func: 'move_to_folder'})
       },
       remove_action (action) {
         this.group.actions = this.group.actions.filter((v) => v !== action)
       },
       action_info (action) {
-        return this.supported_actions[action.f]
+        return this.supported_actions[action]
       }
     },
     data () {
