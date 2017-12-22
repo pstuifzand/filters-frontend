@@ -92,6 +92,17 @@
   export default {
     props: ['group'],
 
+    mounted () {
+        if (!this.group.rules) {
+          this.group.rules = []
+          this.group.rules.push({})
+        }
+        if (!this.group.actions) {
+          this.group.actions = []
+          this.group.actions.push({func: 'move_to_folder'})
+        }
+    },
+
     methods: {
       add_rule () {
         this.group.rules.push({})
@@ -196,6 +207,9 @@
   td.remove {
     width: 10%
   }
+}
+.panel-heading {
+  cursor: pointer;
 }
 </style>
 

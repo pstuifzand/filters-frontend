@@ -37,8 +37,4 @@
 </script>
 
 <style>
-.container {
-  width: 1024px;
-  margin: 0 auto;
-}
 </style>
